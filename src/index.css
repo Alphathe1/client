@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* Dark mode is driven by a `.dark` class on <html> (toggle + system default) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ───── L'Empire — Swiss monochrome: off-white fields, near-black type, grey echoes ─────
+   `gold` is the primary action fill (ink in light, paper in dark) — always paired with `onaccent` text.
+   `accent` is the readable text version of the same ink. */
+:root {
+  /* light: white marble, charcoal ink, antique brass */
+  --bg: #f1f1ef;
+  --surface: #fbfbfa;
+  --surface-2: #e8e8e5;
+  --surface-3: #d9d9d5;
+  --line: rgb(20 20 18 / 0.16);
+  --text: #141412;
+  --muted: #4b4b46;
+  --subtle: #66665f;
+  --accent: #141412;
+  --gold: #141412;
+  --gold-hover: #34342f;
+  --onaccent: #f1f1ef;
+  --brass: #8f6a00;
+  --field: #e8e8e5;
+  --on-field: #141412;
+  --on-field-secondary: rgb(20 20 18 / 0.65);
+  --echo-1: #bfbfbf;
+  --echo-2: #c9c9c9;
+  --echo-3: #d1d1d1;
+  --echo-4: #d9d9d9;
+  --pole: #a3201f;
+  --pole-hover: #861a19;
+  --success: #2f6b3a;
+  --warning: #8a5a00;
+  --danger: #a3261b;
+}
+
+.dark {
+  /* dark: black marble, warm white ink, polished brass */
+  --bg: #0c0c0b;
+  --surface: #141413;
+  --surface-2: #1b1b19;
+  --surface-3: #2a2a27;
+  --line: rgb(243 242 238 / 0.12);
+  --text: #f3f2ee;
+  --muted: #a8a7a0;
+  --subtle: #8a8982;
+  --accent: #f3f2ee;
+  --gold: #f3f2ee;
+  --gold-hover: #d6d5cf;
+  --onaccent: #0c0c0b;
+  --brass: #f0c53d;
+  --field: #141413;
+  --on-field: #f3f2ee;
+  --on-field-secondary: rgb(243 242 238 / 0.6);
+  --echo-1: #4a4a4a;
+  --echo-2: #3f3f3f;
+  --echo-3: #353535;
+  --echo-4: #2b2b2b;
+  --pole: #c8372f;
+  --pole-hover: #b02d26;
+  --success: #7fbf8a;
+  --warning: #e0b456;
+  --danger: #e58a80;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-accent: var(--accent);
+  --color-gold: var(--gold);
+  --color-gold-hover: var(--gold-hover);
+  --color-onaccent: var(--onaccent);
+  --color-brass: var(--brass);
+  --color-field: var(--field);
+  --color-on-field: var(--on-field);
+  --color-on-field-secondary: var(--on-field-secondary);
+  --color-accent-on-field: var(--on-field);
+  --color-echo-1: var(--echo-1);
+  --color-echo-2: var(--echo-2);
+  --color-echo-3: var(--echo-3);
+  --color-echo-4: var(--echo-4);
+  --color-pole: var(--pole);
+  --color-pole-hover: var(--pole-hover);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+}
+
+@theme {
+  --color-ivory: #f2f2f2;
+
+  /* the gold salon sign: engraved roman capitals, used for the wordmark only */
+  --font-sign: "Cinzel", "Times New Roman", serif;
+  --font-display: "DM Sans", system-ui, sans-serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --color-brass-fill: #f0be1e;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 28px;
+
+  --ease-swiss: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out: ease-out;
+
+  --animate-skeleton: skeleton 1.4s ease-in-out infinite;
+
+  @keyframes skeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply text-[17px] leading-relaxed;
+  }
+  h1, h2, h3 {
+    @apply font-display font-semibold tracking-tight;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-4 outline-accent;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
