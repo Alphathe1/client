@@ -15,15 +15,18 @@ import type { ClientSummary, PaymentMethod, Prestation, RegisterSummary, Service
 
 const DEFAULT_RATE = 0.5;
 
+/** Selectable card (spec §4): line at rest, line-strong on hover, brand outline on brand/8 once chosen */
 const tile = (active: boolean) =>
-  `flex cursor-pointer flex-col items-start gap-2 border p-5 text-left transition-colors duration-200 ${
-    active ? "border-accent bg-accent/10" : "border-line bg-surface hover:border-text/40"
+  `flex cursor-pointer flex-col items-start gap-2 rounded-md border p-4 text-left transition-colors duration-100 ease-out sm:p-5 ${
+    active ? "border-brand bg-brand/8" : "border-line bg-surface hover:border-line-strong"
   }`;
 
 function StepTitle({ n, children }: { n: number; children: string }) {
   return (
-    <h2 className="mb-5 flex items-center gap-4 text-[11px] tracking-[0.3em] text-muted uppercase">
-      <span className="flex size-7 items-center justify-center rounded-full border border-accent/60 text-accent">{n}</span>
+    <h2 className="mb-4 flex items-center gap-3 text-base font-semibold text-text">
+      <span aria-hidden className="flex size-7 items-center justify-center rounded-full border border-line-strong font-mono text-xs font-medium text-muted">
+        {n}
+      </span>
       {children}
     </h2>
   );
@@ -119,8 +122,8 @@ export default function Caisse() {
         title="Journal de caisse"
         subtitle="Encaissements, commissions à verser et part du salon. Pour un ticket complet (plusieurs coiffures, remise, rendu monnaie), ouvrez le terminal."
         actions={
-          <div className="flex items-end gap-3">
-            <LinkButton to="/caisse" variant="gold" icon={<CashRegister size={18} aria-hidden />}>
+          <div className="flex flex-wrap items-end gap-3">
+            <LinkButton to="/caisse" variant="primary" icon={<CashRegister size={18} aria-hidden />}>
               Ouvrir le terminal
             </LinkButton>
             <div className="w-44">
@@ -146,13 +149,15 @@ export default function Caisse() {
                 <StepTitle n={1}>Barber</StepTitle>
                 {barbersReq.error && <ErrorState message={barbersReq.error} onRetry={barbersReq.reload} />}
                 {barbersReq.loading && <Skeleton className="h-28" />}
-                {!barbersReq.loading && barbers.length === 0 && <EmptyState title="Aucun barber actif" text="Ajoutez un barber depuis la page Équipe." />}
+                {!barbersReq.loading && !barbersReq.error && barbers.length === 0 && <EmptyState title="Aucun barber actif" text="Ajoutez un barber depuis la page Équipe." />}
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                   {barbers.map((b) => (
                     <button key={b._id} onClick={() => setBarberId(b._id)} aria-pressed={barberId === b._id} className={tile(barberId === b._id)}>
                       <Avatar name={b.username} src={b.avatarUrl} />
-                      <span className="font-display text-2xl font-medium">{b.username}</span>
-                      <span className="text-[11px] tracking-[0.2em] text-subtle uppercase">Commission {Math.round((b.commissionRate ?? DEFAULT_RATE) * 100)} %</span>
+                      <span className="text-base font-medium text-text">{b.username}</span>
+                      <span className="text-xs text-muted">
+                        Commission <span className="font-mono">{Math.round((b.commissionRate ?? DEFAULT_RATE) * 100)} %</span>
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -160,13 +165,14 @@ export default function Caisse() {
 
               <div>
                 <StepTitle n={2}>Coiffure réalisée</StepTitle>
+                {servicesReq.error && <ErrorState message={servicesReq.error} onRetry={servicesReq.reload} />}
                 {servicesReq.loading && <Skeleton className="h-28" />}
                 {!servicesReq.loading && servicesReq.data?.length === 0 && <EmptyState title="Aucune prestation" text="Créez vos prestations depuis Services & tarifs." />}
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                   {servicesReq.data?.map((s) => (
                     <button key={s._id} onClick={() => setServiceId(s._id)} aria-pressed={serviceId === s._id} className={tile(serviceId === s._id)}>
                       <span className="text-base font-medium">{s.name}</span>
-                      <span className="font-display text-2xl font-medium text-accent tabular-nums lining-nums">{formatPrice(s.price)}</span>
+                      <span className="font-mono text-base font-medium text-text">{formatPrice(s.price)}</span>
                     </button>
                   ))}
                 </div>
@@ -186,42 +192,42 @@ export default function Caisse() {
                     ))}
                   </Select>
                 </div>
-                <div role="radiogroup" aria-label="Moyen de paiement" className="mt-6 grid grid-cols-2 gap-4">
+                <div role="group" aria-label="Moyen de paiement" className="mt-6 grid grid-cols-2 gap-4">
                   {(
                     [
                       ["cash", "Espèces", Money],
                       ["card", "Carte", CreditCard],
                     ] as const
                   ).map(([id, label, Icon]) => (
-                    <button key={id} role="radio" aria-checked={method === id} onClick={() => setMethod(id)} className={`${tile(method === id)} flex-row items-center`}>
-                      <Icon size={22} weight="light" className="text-accent" aria-hidden />
-                      <span className="text-sm tracking-[0.15em] uppercase">{label}</span>
+                    <button key={id} type="button" aria-pressed={method === id} onClick={() => setMethod(id)} className={`${tile(method === id)} flex-row items-center`}>
+                      <Icon size={22} weight="light" className="text-muted" aria-hidden />
+                      <span className="text-sm">{label}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* ticket */}
-              <div className="border border-line bg-surface p-8">
+              <div className="rounded-lg border border-line bg-surface p-5 sm:p-6">
                 <dl className="grid gap-4 text-sm sm:grid-cols-2">
                   <div className="flex justify-between gap-4 sm:block">
-                    <dt className="text-[11px] tracking-[0.25em] text-subtle uppercase">Barber</dt>
+                    <dt className="text-xs text-subtle">Barber</dt>
                     <dd className="mt-1 font-medium">{barber?.username ?? "—"}</dd>
                   </div>
                   <div className="flex justify-between gap-4 sm:block">
-                    <dt className="text-[11px] tracking-[0.25em] text-subtle uppercase">Coiffure</dt>
+                    <dt className="text-xs text-subtle">Coiffure</dt>
                     <dd className="mt-1 font-medium">{service?.name ?? "—"}</dd>
                   </div>
                   <div className="flex justify-between gap-4 sm:block">
-                    <dt className="text-[11px] tracking-[0.25em] text-subtle uppercase">Commission barber ({Math.round(rate * 100)} %)</dt>
-                    <dd className="mt-1 font-medium tabular-nums">{service ? formatPrice(commission) : "—"}</dd>
+                    <dt className="text-xs text-subtle">Commission barber (<span className="font-mono">{Math.round(rate * 100)} %</span>)</dt>
+                    <dd className="mt-1 font-mono font-medium">{service ? formatPrice(commission) : "—"}</dd>
                   </div>
                   <div className="flex justify-between gap-4 sm:block">
-                    <dt className="text-[11px] tracking-[0.25em] text-subtle uppercase">Part salon</dt>
-                    <dd className="mt-1 font-medium tabular-nums">{service ? formatPrice(amount - commission) : "—"}</dd>
+                    <dt className="text-xs text-subtle">Part salon</dt>
+                    <dd className="mt-1 font-mono font-medium">{service ? formatPrice(amount - commission) : "—"}</dd>
                   </div>
                 </dl>
-                <Button variant="gold" size="lg" className="mt-8 w-full" loading={busy} disabled={!barber || !service || !(amount >= 0)} onClick={checkout} icon={<Check size={18} aria-hidden />}>
+                <Button variant="brand" size="lg" className="mt-6 w-full" loading={busy} disabled={!barber || !service || !(amount >= 0)} onClick={checkout} icon={<Check size={18} aria-hidden />}>
                   {service ? `Encaisser ${formatPrice(amount)}` : "Encaisser"}
                 </Button>
               </div>
@@ -235,16 +241,16 @@ export default function Caisse() {
           {register.loading && !register.data && <Skeleton className="h-64" />}
           {totals && (
             <>
-              <dl className="grid grid-cols-2 gap-px border border-line bg-line">
+              <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line">
                 {[
-                  { k: "Encaissé", v: totals.revenue, money: true, accent: true },
+                  { k: "Encaissé", v: totals.revenue, money: true },
                   { k: "Coiffures", v: totals.count },
                   { k: "Part barbers", v: totals.commission, money: true },
                   { k: "Part salon", v: totals.shop, money: true },
                 ].map((t) => (
-                  <div key={t.k} className="bg-surface p-6">
-                    <dt className="text-[11px] tracking-[0.25em] text-subtle uppercase">{t.k}</dt>
-                    <dd className={`mt-3 font-display text-4xl font-medium ${t.accent ? "text-accent" : ""}`}>
+                  <div key={t.k} className="bg-surface p-4 sm:p-5">
+                    <dt className="text-sm text-muted">{t.k}</dt>
+                    <dd className="mt-2 font-mono text-xl font-medium text-text sm:text-2xl">
                       <CountUp key={`${day}-${t.v}`} to={t.v} suffix={t.money ? " DA" : ""} duration={0.8} />
                     </dd>
                   </div>
@@ -252,15 +258,15 @@ export default function Caisse() {
               </dl>
               <p className="-mt-6 flex flex-wrap gap-x-8 gap-y-2 text-sm text-muted">
                 <span className="flex items-center gap-2">
-                  <Money size={16} className="text-accent" aria-hidden /> Espèces : <span className="text-text tabular-nums">{formatPrice(totals.cash)}</span>
+                  <Money size={16} className="text-subtle" aria-hidden /> Espèces : <span className="font-mono text-text">{formatPrice(totals.cash)}</span>
                 </span>
                 <span className="flex items-center gap-2">
-                  <CreditCard size={16} className="text-accent" aria-hidden /> Carte : <span className="text-text tabular-nums">{formatPrice(totals.card)}</span>
+                  <CreditCard size={16} className="text-subtle" aria-hidden /> Carte : <span className="font-mono text-text">{formatPrice(totals.card)}</span>
                 </span>
               </p>
 
               <div>
-                <h2 className="mb-5 text-[11px] tracking-[0.3em] text-muted uppercase">À verser aux barbers</h2>
+                <h2 className="mb-4 text-base font-semibold text-text">À verser aux barbers</h2>
                 {register.data!.barbers.length === 0 ? (
                   <p className="text-sm text-subtle">Aucune coiffure encaissée sur cette journée.</p>
                 ) : (
@@ -271,12 +277,12 @@ export default function Caisse() {
                         <span className="min-w-0 flex-1">
                           <span className="block font-medium">{b.username}</span>
                           <span className="block text-sm text-muted">
-                            {b.count} coiffure{b.count > 1 ? "s" : ""} · {formatPrice(b.revenue)}
+                            <span className="font-mono">{b.count}</span> coiffure{b.count > 1 ? "s" : ""} · <span className="font-mono">{formatPrice(b.revenue)}</span>
                           </span>
                         </span>
                         <span className="text-right">
-                          <span className="block font-display text-2xl font-medium text-accent tabular-nums lining-nums">{formatPrice(b.commission)}</span>
-                          <span className="block text-[10px] tracking-[0.2em] text-subtle uppercase">commission</span>
+                          <span className="block font-mono text-lg font-medium text-text">{formatPrice(b.commission)}</span>
+                          <span className="block text-xs text-subtle">commission</span>
                         </span>
                       </li>
                     ))}
@@ -285,7 +291,7 @@ export default function Caisse() {
               </div>
 
               <div>
-                <h2 className="mb-5 flex items-center gap-3 text-[11px] tracking-[0.3em] text-muted uppercase">
+                <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-text">
                   <Receipt size={16} aria-hidden /> Encaissements
                 </h2>
                 <TableToolbar table={salesTable} placeholder="Service, barber, ticket…">
@@ -302,11 +308,11 @@ export default function Caisse() {
                         initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                        className="flex items-center gap-4 border border-line bg-surface px-5 py-4"
+                        className="flex items-center gap-4 rounded-md border border-line bg-surface px-4 py-3 sm:px-5"
                       >
-                        <span className="w-12 shrink-0 text-sm text-subtle tabular-nums">
+                        <span className="w-14 shrink-0 font-mono text-sm text-muted">
                           {formatTime(s.date)}
-                          {s.ticketNumber && <span className="block text-[10px]">N° {s.ticketNumber}</span>}
+                          {s.ticketNumber && <span className="block text-xs">N° {s.ticketNumber}</span>}
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate font-medium">{s.service.name}</span>
@@ -316,10 +322,12 @@ export default function Caisse() {
                           </span>
                         </span>
                         <span className="text-right">
-                          <span className="block font-medium tabular-nums">{formatPrice(s.price)}</span>
-                          <span className="block text-xs text-subtle tabular-nums">barber {formatPrice(s.commission)}</span>
+                          <span className="block font-mono font-medium text-text">{formatPrice(s.price)}</span>
+                          <span className="block text-xs text-subtle">
+                            barber <span className="font-mono">{formatPrice(s.commission)}</span>
+                          </span>
                         </span>
-                        <button onClick={() => setCancelling(s)} className="flex size-10 shrink-0 cursor-pointer items-center justify-center text-subtle transition-colors hover:text-danger" aria-label={`Annuler l'encaissement ${s.service.name} de ${formatTime(s.date)}`}>
+                        <button type="button" onClick={() => setCancelling(s)} className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-sm text-subtle transition-colors duration-100 ease-out hover:bg-danger/12 hover:text-danger pointer-coarse:size-11" aria-label={`Annuler l'encaissement ${s.service.name} de ${formatTime(s.date)}`}>
                           <Trash size={18} weight="light" />
                         </button>
                       </motion.li>

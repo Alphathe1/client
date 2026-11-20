@@ -1,4 +1,5 @@
-const BASE = import.meta.env.VITE_API_URL ?? "/api";
+/** API root: the Vite proxy in development (same origin), VITE_API_URL elsewhere. Images uploaded by the owner are served under it. */
+export const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
 const TOKEN_KEY = "lempire_token";
 
 export const tokenStore = {
@@ -52,7 +53,7 @@ async function request<T>(
   const token = tokenStore.get();
   let res: Response;
   try {
-    res = await fetch(`${BASE}${path}`, {
+    res = await fetch(`${API_BASE}${path}`, {
       method,
       headers: {
         ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
@@ -75,6 +76,7 @@ export const api = {
   get: <T>(path: string) => request<T>("GET", path).then((r) => r.data),
   post: <T>(path: string, body?: unknown) => request<T>("POST", path, body ?? {}),
   patch: <T>(path: string, body?: unknown) => request<T>("PATCH", path, body ?? {}),
+  put: <T>(path: string, body?: unknown) => request<T>("PUT", path, body ?? {}),
   delete: <T>(path: string) => request<T>("DELETE", path),
 };
 

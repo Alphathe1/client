@@ -55,28 +55,28 @@ export function AppointmentActions({ appt, onChange }: { appt: Appointment; onCh
 
   return (
     <div className="flex flex-wrap gap-2">
+      {!isClient && upcoming && (
+        <Button size="sm" variant="primary" icon={<CheckCircle size={16} aria-hidden />} onClick={() => setModal("prestation")}>
+          Terminer
+        </Button>
+      )}
       {upcoming && (
-        <>
-          <Button size="sm" variant="secondary" icon={<PencilSimple size={16} aria-hidden />} onClick={() => navigate(`/book?reschedule=${appt._id}`)}>
-            Modifier
-          </Button>
-          <Button size="sm" variant="danger" icon={<CalendarX size={16} aria-hidden />} onClick={() => setModal("cancel")}>
-            Annuler
-          </Button>
-        </>
+        <Button size="sm" variant="secondary" icon={<PencilSimple size={16} aria-hidden />} onClick={() => navigate(`/book?reschedule=${appt._id}`)}>
+          Modifier
+        </Button>
       )}
       {!isClient && upcoming && (
-        <>
-          <Button size="sm" variant="gold" icon={<CheckCircle size={16} aria-hidden />} onClick={() => setModal("prestation")}>
-            Terminer
-          </Button>
-          <Button size="sm" variant="ghost" icon={<UserMinus size={16} aria-hidden />} onClick={() => setStatus("no-show")} disabled={busy}>
-            Absent
-          </Button>
-        </>
+        <Button size="sm" variant="ghost" icon={<UserMinus size={16} aria-hidden />} onClick={() => setStatus("no-show")} disabled={busy}>
+          Absent
+        </Button>
+      )}
+      {upcoming && (
+        <Button size="sm" variant="danger" icon={<CalendarX size={16} aria-hidden />} onClick={() => setModal("cancel")}>
+          Annuler
+        </Button>
       )}
       {isClient && appt.status === "completed" && !appt.reviewed && (
-        <Button size="sm" variant="gold" icon={<Star size={16} weight="fill" aria-hidden />} onClick={() => setModal("review")}>
+        <Button size="sm" variant="primary" icon={<Star size={16} weight="fill" aria-hidden />} onClick={() => setModal("review")}>
           Noter {appt.barber.username}
         </Button>
       )}
@@ -102,7 +102,7 @@ export function AppointmentActions({ appt, onChange }: { appt: Appointment; onCh
           <Button variant="ghost" onClick={() => setModal(null)}>
             Plus tard
           </Button>
-          <Button variant="gold" loading={busy} onClick={sendReview}>
+          <Button variant="brand" loading={busy} onClick={sendReview}>
             Publier l'avis
           </Button>
         </div>

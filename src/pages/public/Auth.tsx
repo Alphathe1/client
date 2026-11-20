@@ -7,36 +7,40 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Field";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
+import { useSite } from "../../context/SiteContext";
 import { ApiError } from "../../lib/api";
 
 const PASSWORD_RX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/;
 
 function AuthShell({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
+  const { tagline } = useSite().content.identity;
   return (
-    <div className="grid min-h-dvh lg:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-field p-16 text-on-field lg:flex">
-        <p className="font-display text-3xl font-extrabold uppercase">L'Empire</p>
+    <div className="grid min-h-dvh grid-cols-1 lg:grid-cols-2">
+      <div className="hidden flex-col justify-between border-r border-line bg-surface p-12 lg:flex xl:p-16">
+        <Logo />
         <div>
-          <p className="font-display text-7xl leading-[0.9] font-extrabold uppercase xl:text-8xl">Votre fauteuil, vos coupes.</p>
-          <p className="mt-8 max-w-md text-lg text-on-field/70">Réservez, modifiez ou annulez vos rendez-vous, et retrouvez l'historique de vos coupes avec les notes de votre barber.</p>
+          <p className="max-w-md text-4xl font-semibold tracking-tight text-text">Votre fauteuil, vos coupes.</p>
+          <p className="mt-4 max-w-md text-muted">Réservez, modifiez ou annulez vos rendez-vous, et retrouvez l'historique de vos coupes avec les notes de votre barber.</p>
         </div>
-        <p className="border-t border-on-field/15 pt-8 text-sm text-on-field/60">Le coiffeur préféré de ton coiffeur préféré</p>
+        <p className="border-t border-line pt-6 text-sm text-muted wrap-anywhere">{tagline}</p>
       </div>
-      <div className="flex flex-col px-6 py-10 sm:px-16">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="inline-flex min-h-11 items-center gap-3 text-muted hover:text-text">
+      <div className="flex min-w-0 flex-col px-5 py-8 sm:px-12 lg:px-16">
+        <div className="flex items-center justify-between gap-4">
+          <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted transition-colors duration-100 ease-out hover:text-text">
             <ArrowLeft size={18} aria-hidden /> Retour au site
           </Link>
-          <span className="flex items-center gap-4">
+          <span className="flex items-center gap-3">
             <ThemeToggle />
-            <Logo compact />
+            <span className="lg:hidden">
+              <Logo compact />
+            </span>
           </span>
         </div>
         <main id="main" className="flex flex-1 items-center justify-center py-10">
           <div className="w-full max-w-md">
-            <h1 className="font-display text-6xl leading-[0.95] font-extrabold uppercase">{title}</h1>
-            <p className="mt-3 text-muted">{subtitle}</p>
-            <div className="mt-10">{children}</div>
+            <h1 className="text-3xl font-semibold text-text sm:text-4xl">{title}</h1>
+            <p className="mt-2 text-muted">{subtitle}</p>
+            <div className="mt-8">{children}</div>
           </div>
         </main>
       </div>
@@ -80,7 +84,7 @@ export function Login() {
     <AuthShell title="Connexion" subtitle="Heureux de vous revoir dans l'Empire.">
       <form onSubmit={submit} className="flex flex-col gap-7" noValidate>
         {error && (
-          <p role="alert" className="border-l-4 border-danger bg-danger/10 p-3 text-sm text-danger">
+          <p role="alert" className="rounded-md border border-danger/40 bg-danger/12 p-3 text-sm text-danger">
             {error}
           </p>
         )}
@@ -91,7 +95,7 @@ export function Login() {
         </Button>
         <p className="text-center text-sm text-muted">
           Pas encore de compte ?{" "}
-          <Link to="/register" state={{ from: redirect }} className="text-accent underline underline-offset-4">
+          <Link to="/register" state={{ from: redirect }} className="text-brand underline underline-offset-4">
             Créer un compte
           </Link>
         </p>
@@ -159,7 +163,7 @@ export function Register() {
     <AuthShell title="Créer un compte" subtitle="Réservez en ligne et suivez l'historique de vos coupes.">
       <form onSubmit={submit} className="flex flex-col gap-7" noValidate>
         {serverError && (
-          <p role="alert" className="border-l-4 border-danger bg-danger/10 p-3 text-sm text-danger">
+          <p role="alert" className="rounded-md border border-danger/40 bg-danger/12 p-3 text-sm text-danger">
             {serverError}
           </p>
         )}
@@ -178,12 +182,12 @@ export function Register() {
           hint="8 caractères min., une majuscule, une minuscule, un chiffre."
           required
         />
-        <Button type="submit" variant="gold" size="lg" loading={loading} icon={<UserPlus size={20} aria-hidden />}>
+        <Button type="submit" variant="primary" size="lg" loading={loading} icon={<UserPlus size={20} aria-hidden />}>
           Créer mon compte
         </Button>
         <p className="text-center text-sm text-muted">
           Déjà inscrit ?{" "}
-          <Link to="/login" state={{ from: redirect }} className="text-accent underline underline-offset-4">
+          <Link to="/login" state={{ from: redirect }} className="text-brand underline underline-offset-4">
             Se connecter
           </Link>
         </p>

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { api, tokenStore } from "../lib/api";
+import { IN_PREVIEW } from "../lib/site/preview";
 import type { User } from "../lib/types";
 
 interface RegisterInput {
@@ -22,9 +23,11 @@ const AuthContext = createContext<AuthValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!IN_PREVIEW);
 
   useEffect(() => {
+    // the editor's preview frame is a visitor's view: no session bootstrap, so a failed request can never clear the owner's token
+    if (IN_PREVIEW) return;
     if (!tokenStore.get()) {
       setLoading(false);
       return;

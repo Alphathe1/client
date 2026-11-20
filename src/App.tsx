@@ -30,6 +30,7 @@ const Team = lazy(() => import("./pages/dashboard/Team"));
 const Profile = lazy(() => import("./pages/dashboard/Profile"));
 const Caisse = lazy(() => import("./pages/dashboard/Caisse"));
 const Terminal = lazy(() => import("./pages/pos/Terminal"));
+const SiteEditor = lazy(() => import("./pages/dashboard/site/SiteEditor"));
 
 export default function App() {
   const { pathname } = useLocation();
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="services" element={<ProtectedRoute roles={["owner", "manager"]}><ServicesAdmin /></ProtectedRoute>} />
           <Route path="caisse" element={<ProtectedRoute roles={["owner", "manager"]}><Caisse /></ProtectedRoute>} />
           <Route path="team" element={<ProtectedRoute roles={["owner", "manager"]}><Team /></ProtectedRoute>} />
+          <Route path="site" element={<ProtectedRoute roles={["owner"]}><SiteEditor /></ProtectedRoute>} />
         </Route>
       </Routes>
     </Suspense>

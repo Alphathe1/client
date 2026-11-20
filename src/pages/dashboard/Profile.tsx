@@ -86,7 +86,7 @@ export default function Profile() {
           <form onSubmit={save} className="flex flex-col gap-5">
             <div className="flex items-center gap-5">
               <Avatar name={form.username || user.username} src={form.avatarUrl || undefined} size="xl" />
-              <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-line px-4 text-sm font-semibold transition-colors hover:border-accent hover:text-accent">
+              <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-sm border border-line-strong px-4 text-sm font-medium text-text transition-[color,background-color,border-color] duration-100 ease-out hover:border-text hover:bg-surface-2 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand">
                 <Camera size={18} aria-hidden /> Changer la photo
                 <input type="file" accept="image/*" className="sr-only" onChange={(e) => onAvatar(e.target.files?.[0])} />
               </label>
@@ -104,7 +104,7 @@ export default function Profile() {
               </>
             )}
             <div className="flex justify-end">
-              <Button type="submit" variant="gold" loading={busy} icon={<FloppyDisk size={18} aria-hidden />}>
+              <Button type="submit" variant="primary" loading={busy} icon={<FloppyDisk size={18} aria-hidden />}>
                 Enregistrer
               </Button>
             </div>
@@ -113,7 +113,7 @@ export default function Profile() {
         <Card className="h-fit">
           <form onSubmit={changePassword} className="flex flex-col gap-6">
             <h2 className="flex items-center gap-2 font-semibold">
-              <LockKey size={18} className="text-accent" aria-hidden /> Mot de passe
+              <LockKey size={18} className="text-muted" aria-hidden /> Mot de passe
             </h2>
             {pwError && <p role="alert" className="text-sm text-danger">{pwError}</p>}
             <Input label="Mot de passe actuel" type="password" autoComplete="current-password" value={pw.currentPassword} onChange={(e) => setPw((p) => ({ ...p, currentPassword: e.target.value }))} required />

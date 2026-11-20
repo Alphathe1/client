@@ -70,22 +70,26 @@ export default function Reviews() {
         <div className="grid gap-8 lg:grid-cols-3">
           <Card className="h-fit">
             <p className="text-sm text-muted">Note moyenne</p>
-            <p className="mt-4 font-display text-7xl leading-none font-medium text-accent">
+            <p className="mt-2 font-mono text-5xl leading-none font-medium text-text">
               <CountUp to={avg} decimals={1} />
             </p>
-            <Stars value={avg} />
-            <p className="mt-1 text-sm text-muted">{data.length} avis</p>
+            <div className="mt-3">
+              <Stars value={avg} />
+            </div>
+            <p className="mt-1 text-sm text-muted">
+              <span className="font-mono">{data.length}</span> avis
+            </p>
             <ul className="mt-6 flex flex-col gap-2">
               {dist.map((d) => (
                 <li key={d.n} className="flex items-center gap-4 text-sm">
-                  <span className="w-3 tabular-nums">{d.n}</span>
+                  <span className="w-3 font-mono">{d.n}</span>
                   <meter min={0} max={data.length} value={d.count} className="sr-only">
                     {d.count}
                   </meter>
-                  <span aria-hidden className="h-2 flex-1 overflow-hidden rounded-full bg-line">
-                    <span className={`block h-full rounded-full bg-gold ${["w-0", "w-1/12", "w-2/12", "w-3/12", "w-4/12", "w-5/12", "w-6/12", "w-7/12", "w-8/12", "w-9/12", "w-10/12", "w-11/12", "w-full"][Math.round((d.count / data.length) * 12)]}`} />
+                  <span aria-hidden className="h-2 flex-1 overflow-hidden rounded-full bg-surface-3">
+                    <span className={`block h-full rounded-full bg-primary ${["w-0", "w-1/12", "w-2/12", "w-3/12", "w-4/12", "w-5/12", "w-6/12", "w-7/12", "w-8/12", "w-9/12", "w-10/12", "w-11/12", "w-full"][Math.round((d.count / data.length) * 12)]}`} />
                   </span>
-                  <span className="w-6 text-right text-muted tabular-nums">{d.count}</span>
+                  <span className="w-6 text-right font-mono text-muted">{d.count}</span>
                 </li>
               ))}
             </ul>
@@ -94,7 +98,7 @@ export default function Reviews() {
           {table.total === 0 && <EmptyState icon={<ChatCircleText size={28} />} title="Aucun résultat" />}
           <ul className="flex flex-col gap-4">
             {table.rows.map((r) => (
-              <li key={r._id} className="rounded-2xl border border-line bg-surface p-5">
+              <li key={r._id} className="rounded-lg border border-line bg-surface p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <Avatar name={r.client.username} src={r.client.avatarUrl} size="sm" />

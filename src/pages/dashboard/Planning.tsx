@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Button } from "../../components/ui/Button";
 import { EmptyState, ErrorState, PageHeader, Skeleton } from "../../components/ui/Display";
 import { FilterSelect } from "../../components/ui/DataTools";
+import { Segmented } from "../../components/ui/Segmented";
 import { Modal } from "../../components/ui/Modal";
 import { AppointmentActions } from "../../components/AppointmentActions";
 import { useAuth } from "../../context/AuthContext";
@@ -22,10 +23,10 @@ const VIEW_LABEL: Record<View, string> = { day: "Jour", week: "Semaine", month: 
 
 const tone: Record<Appointment["status"], string> = {
   pending: "border-warning/50 bg-warning/15",
-  confirmed: "border-accent/60 bg-accent/20",
-  completed: "border-success/50 bg-success/15",
-  cancelled: "border-danger/40 bg-danger/10 opacity-60",
-  "no-show": "border-line bg-surface-3 opacity-60",
+  confirmed: "border-success/50 bg-success/15",
+  completed: "border-line-strong bg-surface-3",
+  cancelled: "border-dashed border-danger/40 bg-danger/10",
+  "no-show": "border-dashed border-line-strong bg-surface-3",
 };
 
 const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -91,12 +92,12 @@ interface Column {
 
 function TimeGrid({ columns, dayStart, showBarber, onSelect, minColWidth }: { columns: Column[]; dayStart: (c: Column) => Date; showBarber: boolean; onSelect: (a: Appointment) => void; minColWidth: string }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+    <div className="overflow-x-auto rounded-lg border border-line bg-surface">
       <div className="flex min-w-[640px]">
         <div className="sticky left-0 z-20 w-16 shrink-0 border-r border-line bg-surface">
           <div className="h-14 border-b border-line" />
           {Array.from({ length: HOURS }).map((_, i) => (
-            <div key={i} className="h-18 border-b border-line/50 pt-1 pr-2 text-right text-xs text-subtle tabular-nums">
+            <div key={i} className="h-18 border-b border-line/50 pt-1 pr-2 text-right font-mono text-xs text-subtle">
               {String(START_HOUR + i).padStart(2, "0")}:00
             </div>
           ))}
@@ -105,10 +106,10 @@ function TimeGrid({ columns, dayStart, showBarber, onSelect, minColWidth }: { co
           const base = dayStart(c);
           const nowOffset = ((Date.now() - base.getTime()) / 3_600_000 - START_HOUR) * HOUR_PX;
           return (
-            <div key={c.key} className={`${minColWidth} flex-1 not-last:border-r not-last:border-line ${c.today ? "bg-accent/3" : ""}`}>
+            <div key={c.key} className={`${minColWidth} flex-1 not-last:border-r not-last:border-line ${c.today ? "bg-surface-2/50" : ""}`}>
               <div className="flex h-14 flex-col justify-center border-b border-line px-4">
                 {c.onHeader ? (
-                  <button onClick={c.onHeader} className="cursor-pointer text-left text-sm font-semibold capitalize hover:text-accent">
+                  <button type="button" onClick={c.onHeader} className="cursor-pointer rounded-xs text-left text-sm font-semibold capitalize underline-offset-4 hover:underline">
                     {c.title}
                   </button>
                 ) : (
@@ -121,8 +122,8 @@ function TimeGrid({ columns, dayStart, showBarber, onSelect, minColWidth }: { co
                   <div key={i} className="h-18 border-b border-line/50" />
                 ))}
                 {c.today && nowOffset > 0 && nowOffset < HOURS * HOUR_PX && (
-                  <div className="pointer-events-none absolute inset-x-0 z-10 h-0.5 bg-gold" style={{ top: nowOffset }} aria-hidden>
-                    <span className="absolute -top-1 -left-1 size-2.5 rounded-full bg-gold" />
+                  <div className="pointer-events-none absolute inset-x-0 z-10 h-0.5 bg-brand-fill" style={{ top: nowOffset }} aria-hidden>
+                    <span className="absolute -top-1 -left-1 size-2.5 rounded-full bg-brand-fill" />
                   </div>
                 )}
                 {layoutLanes(c.items).map(({ a, lane, lanes }, i) => {
@@ -138,11 +139,11 @@ function TimeGrid({ columns, dayStart, showBarber, onSelect, minColWidth }: { co
                       transition={{ delay: Math.min(i * 0.02, 0.3) }}
                       onClick={() => onSelect(a)}
                       style={{ top, height, left: `calc(${lane * width}% + 4px)`, width: `calc(${width}% - 8px)` }}
-                      className={`absolute cursor-pointer overflow-hidden rounded-lg border-l-4 px-2.5 py-1.5 text-left text-xs transition-[filter] hover:brightness-125 ${tone[a.status]}`}
+                      className={`absolute cursor-pointer overflow-hidden rounded-md border-l-4 px-2.5 py-1.5 text-left text-xs transition-[filter] hover:brightness-125 ${tone[a.status]}`}
                       aria-label={`${formatTime(a.start)} ${a.client.username}, ${a.service.name}, ${STATUS_LABEL[a.status]}`}
                     >
-                      <span className="block truncate font-semibold text-text">
-                        {formatTime(a.start)} · {a.client.username}
+                      <span className={`block truncate font-semibold text-text ${a.status === "cancelled" ? "line-through" : ""}`}>
+                        <span className="font-mono">{formatTime(a.start)}</span> · {a.client.username}
                       </span>
                       <span className="block truncate text-muted">{showBarber ? `${a.barber.username} · ` : ""}{a.service.name}</span>
                     </motion.button>
@@ -167,9 +168,9 @@ function MonthGrid({ anchor, from, appts, onPickDay, onSelect }: { anchor: Date;
   }
   const today = new Date();
   return (
-    <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+    <div className="overflow-x-auto rounded-lg border border-line bg-surface">
       <div className="min-w-[720px]">
-        <div className="grid grid-cols-7 border-b border-line text-center text-[11px] tracking-[0.25em] text-muted uppercase">
+        <div className="grid grid-cols-7 border-b border-line text-center text-xs text-muted">
           {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
             <div key={d} className="py-3">
               {d}
@@ -181,10 +182,11 @@ function MonthGrid({ anchor, from, appts, onPickDay, onSelect }: { anchor: Date;
             const items = (byDay.get(d.toDateString()) ?? []).filter((a) => a.status !== "cancelled").sort((x, y) => x.start.localeCompare(y.start));
             const outside = d.getMonth() !== anchor.getMonth();
             return (
-              <div key={d.toISOString()} className={`min-h-32 border-r border-b border-line/60 p-2 nth-[7n]:border-r-0 ${outside ? "bg-bg/50 opacity-50" : ""}`}>
+              <div key={d.toISOString()} className={`min-h-32 border-r border-b border-line/60 p-2 nth-[7n]:border-r-0 ${outside ? "bg-bg/50" : ""}`}>
                 <button
                   onClick={() => onPickDay(d)}
-                  className={`mb-1.5 flex size-8 cursor-pointer items-center justify-center rounded-full text-sm tabular-nums transition-colors ${sameDay(d, today) ? "bg-gold font-semibold text-onaccent" : "hover:bg-surface-2"}`}
+                  type="button"
+                  className={`mb-1.5 flex size-9 cursor-pointer items-center justify-center rounded-full font-mono text-sm transition-colors pointer-coarse:size-11 ${sameDay(d, today) ? "bg-primary font-semibold text-on-primary" : `hover:bg-surface-2 ${outside ? "text-subtle" : ""}`}`}
                   aria-label={`Voir le ${d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })} (${items.length} rendez-vous)`}
                 >
                   {d.getDate()}
@@ -192,14 +194,14 @@ function MonthGrid({ anchor, from, appts, onPickDay, onSelect }: { anchor: Date;
                 <ul className="flex flex-col gap-1">
                   {items.slice(0, 3).map((a) => (
                     <li key={a._id}>
-                      <button onClick={() => onSelect(a)} className={`w-full cursor-pointer truncate rounded border-l-2 px-1.5 py-0.5 text-left text-[11px] hover:brightness-125 ${tone[a.status]}`}>
-                        {formatTime(a.start)} {a.client.username}
+                      <button type="button" onClick={() => onSelect(a)} className={`w-full cursor-pointer truncate rounded-xs border-l-2 px-1.5 py-0.5 text-left text-xs hover:brightness-125 ${tone[a.status]}`}>
+                        <span className="font-mono">{formatTime(a.start)}</span> {a.client.username}
                       </button>
                     </li>
                   ))}
                 </ul>
                 {items.length > 3 && (
-                  <button onClick={() => onPickDay(d)} className="mt-1 cursor-pointer px-1 text-[11px] font-semibold text-accent hover:underline">
+                  <button type="button" onClick={() => onPickDay(d)} className="mt-1 min-h-9 cursor-pointer rounded-xs px-1 text-xs font-medium text-muted underline-offset-4 hover:text-text hover:underline pointer-coarse:min-h-11">
                     +{items.length - 3} autres
                   </button>
                 )}
@@ -272,25 +274,12 @@ export default function Planning() {
         subtitle={rangeLabel(view, anchor)}
         actions={
           <div className="flex flex-wrap items-center gap-4">
-            <div role="tablist" aria-label="Affichage" className="flex gap-1 rounded-xl border border-line bg-surface p-1">
-              {views.map((v) => (
-                <button
-                  key={v}
-                  role="tab"
-                  aria-selected={view === v}
-                  onClick={() => setView(v)}
-                  className={`relative min-h-10 cursor-pointer rounded-lg px-4 text-sm font-semibold transition-colors ${view === v ? "text-onaccent" : "text-muted hover:text-text"}`}
-                >
-                  {view === v && <motion.span layoutId="planning-view" className="absolute inset-0 rounded-lg bg-gold" transition={{ type: "spring", stiffness: 420, damping: 32 }} />}
-                  <span className="relative">{VIEW_LABEL[v]}</span>
-                </button>
-              ))}
-            </div>
+            <Segmented id="planning-view" label="Affichage" value={view} onChange={setView} options={views.map((v) => ({ value: v, label: VIEW_LABEL[v] }))} />
             <div className="flex items-center gap-2">
               <Button variant="secondary" size="sm" onClick={() => shift(-1)} aria-label="Période précédente">
                 <CaretLeft size={18} />
               </Button>
-              <Button variant={isCurrent ? "gold" : "secondary"} size="sm" onClick={() => setAnchor(today)}>
+              <Button variant={isCurrent ? "primary" : "secondary"} size="sm" onClick={() => setAnchor(today)}>
                 Aujourd'hui
               </Button>
               <Button variant="secondary" size="sm" onClick={() => shift(1)} aria-label="Période suivante">

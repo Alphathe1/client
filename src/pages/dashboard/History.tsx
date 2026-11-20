@@ -24,16 +24,16 @@ export default function History() {
     <>
       <PageHeader title="Mon historique" subtitle="Toutes vos coupes, avec les notes de votre barber et les photos." />
       {data && data.length > 0 && (
-        <div className="mb-8 grid grid-cols-2 gap-6 sm:w-fit">
+        <div className="mb-8 grid grid-cols-2 gap-4 sm:w-fit">
           <Card>
             <p className="text-sm text-muted">Visites</p>
-            <p className="font-display text-5xl text-accent font-medium">
+            <p className="mt-2 font-mono text-xl font-medium text-text sm:text-3xl">
               <CountUp to={data.length} />
             </p>
           </Card>
           <Card>
-            <p className="text-sm text-muted">Fidélité</p>
-            <p className="font-display text-5xl font-medium">
+            <p className="text-sm text-muted">Total dépensé</p>
+            <p className="mt-2 font-mono text-xl font-medium text-text sm:text-3xl">
               <CountUp to={total} suffix=" DA" />
             </p>
           </Card>

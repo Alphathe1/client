@@ -88,7 +88,7 @@ export default function Portfolio() {
         title="Portfolio"
         subtitle={isBarber ? "Votre galerie, affichée sur votre profil public." : "Galeries des barbers."}
         actions={
-          <Button variant="gold" icon={<Plus size={18} weight="bold" aria-hidden />} onClick={() => setOpen(true)}>
+          <Button variant="primary" icon={<Plus size={18} weight="bold" aria-hidden />} onClick={() => setOpen(true)}>
             Ajouter des photos
           </Button>
         }
@@ -129,7 +129,7 @@ export default function Portfolio() {
       <motion.ul layout className="grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
         <AnimatePresence>
           {table.rows.map((p) => (
-            <motion.li key={p._id} layout initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="group relative overflow-hidden rounded-2xl border border-line bg-surface">
+            <motion.li key={p._id} layout initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="group relative overflow-hidden rounded-lg border border-line bg-surface">
               <img src={p.imageUrl} alt={p.title ?? p.cutType} className="aspect-square w-full object-cover" loading="lazy" />
               <div className="flex items-center justify-between gap-2 p-3">
                 <div className="min-w-0">
@@ -140,7 +140,8 @@ export default function Portfolio() {
               </div>
               <button
                 onClick={() => remove(p._id)}
-                className="absolute top-2 right-2 flex size-10 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white opacity-100 transition-opacity hover:bg-danger sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100"
+                type="button"
+                className="absolute top-2 right-2 flex size-10 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white opacity-100 transition-opacity hover:bg-danger pointer-coarse:size-11 pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:focus-visible:opacity-100"
                 aria-label={`Supprimer ${p.title ?? p.cutType}`}
               >
                 <Trash size={18} />
@@ -174,7 +175,7 @@ export default function Portfolio() {
           </div>
           <Textarea label="Description" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} maxLength={500} />
           <div className="flex justify-end">
-            <Button type="submit" variant="gold" loading={busy}>
+            <Button type="submit" variant="brand" loading={busy}>
               Publier
             </Button>
           </div>

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle, WarningCircle, X } from "@phosphor-icons/react";
+import { IconButton } from "../components/ui/Button";
 
 type ToastKind = "success" | "error";
 interface Toast {
@@ -35,22 +36,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, x: 40, transition: { duration: 0.15, ease: "easeIn" } }}
               transition={{ type: "spring", stiffness: 420, damping: 32 }}
-              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-line bg-surface-2/95 p-4"
+              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-md border border-line bg-surface-2 p-4 shadow-pop"
               role={t.kind === "error" ? "alert" : "status"}
             >
               {t.kind === "success" ? (
-                <CheckCircle size={22} weight="fill" className="shrink-0 text-accent" aria-hidden />
+                <CheckCircle size={22} weight="fill" className="shrink-0 text-success" aria-hidden />
               ) : (
                 <WarningCircle size={22} weight="fill" className="shrink-0 text-danger" aria-hidden />
               )}
               <p className="flex-1 text-sm text-text">{t.message}</p>
-              <button
-                onClick={() => dismiss(t.id)}
-                className="-m-2 rounded-lg p-2 text-muted transition-colors hover:text-text"
-                aria-label="Fermer la notification"
-              >
-                <X size={16} />
-              </button>
+              <IconButton label="Fermer la notification" onClick={() => dismiss(t.id)} className="-my-2.5 -mr-2.5">
+                <X size={16} aria-hidden />
+              </IconButton>
             </motion.div>
           ))}
         </AnimatePresence>

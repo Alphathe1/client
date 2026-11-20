@@ -40,7 +40,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
   return (
     <button
       onClick={toggle}
-      className={`flex size-11 cursor-pointer items-center justify-center rounded-full border border-line text-muted transition-colors duration-300 hover:border-accent hover:text-accent ${className}`}
+      className={`flex size-10 cursor-pointer items-center justify-center rounded-sm text-muted transition-colors duration-100 ease-out hover:bg-surface-2 hover:text-text pointer-coarse:size-11 ${className}`}
       aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
     >
       {theme === "dark" ? <Sun size={18} weight="light" /> : <Moon size={18} weight="light" />}

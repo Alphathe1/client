@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { motion } from "motion/react";
 import { ArrowLeft, CalendarCheck, Envelope, FloppyDisk, Images, Notebook, Phone, Plus } from "@phosphor-icons/react";
 import CountUp from "../../components/reactbits/CountUp";
 import { PrestationCard } from "../../components/PrestationCard";
@@ -9,6 +8,7 @@ import { Button } from "../../components/ui/Button";
 import { Avatar, Card, EmptyState, ErrorState, Skeleton, StatusBadge } from "../../components/ui/Display";
 import { FilterSelect, Pagination, TableToolbar, useTable } from "../../components/ui/DataTools";
 import { Textarea } from "../../components/ui/Field";
+import { Segmented } from "../../components/ui/Segmented";
 import { Modal } from "../../components/ui/Modal";
 import { useToast } from "../../context/ToastContext";
 import { api } from "../../lib/api";
@@ -17,9 +17,9 @@ import { formatDate, formatDateTime, formatPrice } from "../../lib/format";
 import type { Appointment, ClientFile, Prestation } from "../../lib/types";
 
 const TABS = [
-  { id: "prestations", label: "Prestations", icon: Notebook },
-  { id: "appointments", label: "Rendez-vous", icon: CalendarCheck },
-  { id: "cuts", label: "Anciennes coupes", icon: Images },
+  { id: "prestations", label: "Prestations" },
+  { id: "appointments", label: "Rendez-vous" },
+  { id: "cuts", label: "Photos" },
 ] as const;
 
 function PagedVisits({ items }: { items: Prestation[] }) {
@@ -67,14 +67,14 @@ function PagedAppointments({ items }: { items: Appointment[] }) {
         <FilterSelect label="Statut" value={status} onChange={setStatus} options={[{ value: "", label: "Tous" }, { value: "pending", label: "En attente" }, { value: "confirmed", label: "Confirmé" }, { value: "completed", label: "Terminé" }, { value: "cancelled", label: "Annulé" }, { value: "no-show", label: "Absent" }]} />
       </TableToolbar>
       {table.total === 0 && <EmptyState icon={<CalendarCheck size={28} />} title="Aucun résultat" />}
-      <ul className="divide-y divide-line rounded-2xl border border-line bg-surface">
+      <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
         {table.rows.map((a) => (
           <li key={a._id} className="flex flex-wrap items-center gap-4 px-4 py-3 text-sm">
-            <span className="w-44 font-semibold">{formatDateTime(a.start)}</span>
+            <span className="w-44 font-mono text-text">{formatDateTime(a.start)}</span>
             <span className="flex-1 text-muted">
               {a.service.name} · {a.barber.username}
             </span>
-            <span className="tabular-nums">{formatPrice(a.price)}</span>
+            <span className="font-mono">{formatPrice(a.price)}</span>
             <StatusBadge status={a.status} />
           </li>
         ))}
@@ -100,7 +100,7 @@ function PagedCuts({ photos }: { photos: { src: string; p: Prestation }[] }) {
       {table.total === 0 && <EmptyState icon={<Images size={28} />} title="Aucun résultat" />}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {table.rows.map(({ src, p }, i) => (
-          <figure key={`${p._id}-${i}`} className="overflow-hidden rounded-xl border border-line">
+          <figure key={`${p._id}-${i}`} className="overflow-hidden rounded-md border border-line">
             <img src={src} alt={`${p.service.name} du ${formatDate(p.date)}`} className="aspect-square w-full object-cover" loading="lazy" />
             <figcaption className="bg-surface px-3 py-2 text-xs text-muted">
               {formatDate(p.date)} · {p.cutType ?? p.service.name}
@@ -152,34 +152,34 @@ export default function ClientDetail() {
       <div className="flex flex-col gap-8 md:flex-row md:items-center">
         <Avatar name={client.username} src={client.avatarUrl} size="xl" />
         <div className="flex-1">
-          <h1 className="font-display text-5xl font-medium">{client.username}</h1>
+          <h1 className="text-2xl font-semibold text-text">{client.username}</h1>
           <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted">
-            <a href={`mailto:${client.email}`} className="inline-flex items-center gap-1.5 hover:text-accent">
+            <a href={`mailto:${client.email}`} className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-text hover:underline">
               <Envelope size={16} aria-hidden /> {client.email}
             </a>
             {client.phone && (
-              <a href={`tel:${client.phone}`} className="inline-flex items-center gap-1.5 hover:text-accent">
+              <a href={`tel:${client.phone}`} className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-text hover:underline">
                 <Phone size={16} aria-hidden /> {client.phone}
               </a>
             )}
             <span>Client depuis le {formatDate(client.createdAt)}</span>
           </div>
         </div>
-        <Button variant="gold" icon={<Plus size={18} weight="bold" aria-hidden />} onClick={() => setAdding(true)}>
+        <Button variant="primary" icon={<Plus size={18} weight="bold" aria-hidden />} onClick={() => setAdding(true)}>
           Ajouter une prestation
         </Button>
       </div>
 
-      <dl className="mt-8 grid grid-cols-2 gap-6 lg:grid-cols-4">
+      <dl className="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-4">
         {[
-          { label: "Visites", value: stats.visitCount, gold: true },
+          { label: "Visites", value: stats.visitCount },
           { label: "Total dépensé", value: stats.totalSpent, suffix: " DA" },
           { label: "Annulations", value: stats.cancelled },
           { label: "Absences", value: stats.noShows },
         ].map((s) => (
           <Card key={s.label}>
             <dt className="text-sm text-muted">{s.label}</dt>
-            <dd className={`font-display text-5xl ${s.gold ? "text-accent" : ""}`}>
+            <dd className="mt-2 font-mono text-xl font-medium text-text sm:text-2xl">
               <CountUp to={s.value} suffix={s.suffix ?? ""} />
             </dd>
           </Card>
@@ -188,20 +188,8 @@ export default function ClientDetail() {
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div role="tablist" className="mb-5 flex gap-1 overflow-x-auto rounded-xl border border-line bg-surface p-1">
-            {TABS.map((t) => (
-              <button
-                key={t.id}
-                role="tab"
-                aria-selected={tab === t.id}
-                onClick={() => setTab(t.id)}
-                className={`relative flex min-h-10 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold whitespace-nowrap transition-colors ${tab === t.id ? "text-onaccent" : "text-muted hover:text-text"}`}
-              >
-                {tab === t.id && <motion.span layoutId="client-tab" className="absolute inset-0 rounded-lg bg-gold" transition={{ type: "spring", stiffness: 420, damping: 32 }} />}
-                <t.icon size={16} className="relative" aria-hidden />
-                <span className="relative">{t.label}</span>
-              </button>
-            ))}
+          <div className="mb-5">
+            <Segmented id="client-tab" label="Historique affiché" value={tab} onChange={setTab} options={TABS.map((t) => ({ value: t.id, label: t.label }))} />
           </div>
 
           {tab === "prestations" &&

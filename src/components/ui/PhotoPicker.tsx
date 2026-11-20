@@ -30,30 +30,44 @@ export function PhotoPicker({ label, value, onChange, max = 4 }: PhotoPickerProp
       <span className="text-sm font-medium text-text">{label}</span>
       <div className="flex flex-wrap gap-4">
         {value.map((src, i) => (
-          <div key={i} className="group relative size-24 overflow-hidden rounded-xl border border-line">
+          <div key={i} className="relative size-24 overflow-hidden rounded-md border border-line">
             <img src={src} alt={`${label} ${i + 1}`} className="size-full object-cover" />
             <button
               type="button"
               onClick={() => onChange(value.filter((_, j) => j !== i))}
-              className="absolute top-1 right-1 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white hover:bg-danger"
+              className="absolute top-1 right-1 flex size-8 cursor-pointer pointer-coarse:size-11 items-center justify-center rounded-full bg-black/70 text-white transition-colors duration-100 ease-out hover:bg-danger"
               aria-label={`Retirer la photo ${i + 1}`}
             >
-              <X size={14} weight="bold" />
+              <X size={14} weight="bold" aria-hidden />
             </button>
           </div>
         ))}
         {value.length < max && (
           <label
             htmlFor={id}
-            className="flex size-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-line bg-surface-2 text-muted transition-colors hover:border-accent hover:text-accent"
+            className="flex size-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-dashed border-line-strong bg-surface-2 text-muted transition-colors duration-100 ease-out hover:border-brand hover:text-brand has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand"
           >
-            {value.length ? <Plus size={22} /> : <ImageSquare size={22} />}
+            {value.length ? <Plus size={22} aria-hidden /> : <ImageSquare size={22} aria-hidden />}
             <span className="text-xs">Ajouter</span>
+            <input
+              id={id}
+              type="file"
+              accept="image/*"
+              multiple
+              className="sr-only"
+              onChange={(e) => {
+                onFiles(e.target.files);
+                e.target.value = "";
+              }}
+            />
           </label>
         )}
-        <input id={id} type="file" accept="image/*" multiple className="sr-only" onChange={(e) => { onFiles(e.target.files); e.target.value = ""; }} />
       </div>
-      {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-danger">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

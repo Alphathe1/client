@@ -18,15 +18,15 @@ export function PrestationCard({ p, showClient = true, onEdit, onDelete }: { p: 
     <Card className="flex flex-col gap-6">
       {hasPhotos && (
         <div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-surface-2">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-surface-2">
             {current[0] ? (
               <motion.img key={view + current[0].slice(-20)} src={current[0]} alt={`Photo ${view === "before" ? "avant" : "après"}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="size-full object-cover" />
             ) : (
               <p className="flex size-full items-center justify-center text-sm text-muted">Pas de photo {view === "before" ? "avant" : "après"}</p>
             )}
-            <div role="tablist" className="absolute bottom-2 left-2 flex rounded-lg bg-black/70 p-0.5">
+            <div role="group" aria-label="Photo affichée" className="absolute bottom-2 left-2 flex rounded-md bg-black/70 p-0.5">
               {(["before", "after"] as const).map((v) => (
-                <button key={v} role="tab" aria-selected={view === v} onClick={() => setView(v)} className={`min-h-8 cursor-pointer rounded-md px-3 text-xs font-semibold ${view === v ? "bg-gold text-onaccent" : "text-white"}`}>
+                <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)} className={`min-h-9 cursor-pointer rounded-sm px-3 text-xs font-semibold pointer-coarse:min-h-11 ${view === v ? "bg-white text-black" : "text-white/80 hover:text-white"}`}>
                   {v === "before" ? "Avant" : "Après"}
                 </button>
               ))}
@@ -35,7 +35,7 @@ export function PrestationCard({ p, showClient = true, onEdit, onDelete }: { p: 
           {current.length > 1 && (
             <div className="mt-2 flex gap-2">
               {current.slice(1).map((src, i) => (
-                <img key={i} src={src} alt="" className="size-12 rounded-lg object-cover" />
+                <img key={i} src={src} alt="" className="size-12 rounded-md object-cover" />
               ))}
             </div>
           )}
@@ -48,19 +48,19 @@ export function PrestationCard({ p, showClient = true, onEdit, onDelete }: { p: 
             {formatDate(p.date)} · par {p.barber.username}
           </p>
           {showClient && p.client && (
-            <Link to={`/dashboard/clients/${p.client._id}`} className="text-sm font-semibold text-accent hover:text-accent">
+            <Link to={`/dashboard/clients/${p.client._id}`} className="text-sm font-semibold text-text underline-offset-4 hover:underline">
               {p.client.username}
             </Link>
           )}
         </div>
-        <span className="font-display text-2xl text-accent tabular-nums lining-nums font-medium">{formatPrice(p.price)}</span>
+        <span className="shrink-0 font-mono text-lg font-medium text-text">{formatPrice(p.price)}</span>
       </div>
       {p.cutType && (
         <span>
           <Badge tone="outline">{p.cutType}</Badge>
         </span>
       )}
-      {p.notes && <p className="rounded-xl bg-surface-2 p-3 text-sm text-muted">{p.notes}</p>}
+      {p.notes && <p className="rounded-md bg-surface-2 p-3 text-sm text-muted">{p.notes}</p>}
       {(onEdit || onDelete) && (
         <div className="mt-auto flex gap-2 border-t border-line pt-3">
           {onEdit && (

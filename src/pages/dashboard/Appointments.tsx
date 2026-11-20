@@ -7,6 +7,8 @@ import { LinkButton } from "../../components/ui/Button";
 import { Avatar, EmptyState, ErrorState, PageHeader, Skeleton, StatusBadge } from "../../components/ui/Display";
 import { Select } from "../../components/ui/Field";
 import { FilterSelect, Pagination, TableToolbar, useTable } from "../../components/ui/DataTools";
+import { Segmented } from "../../components/ui/Segmented";
+import { EASE_SWIFT } from "../../lib/motion";
 import { useAuth } from "../../context/AuthContext";
 import { qs } from "../../lib/api";
 import { useFetch } from "../../lib/useFetch";
@@ -29,19 +31,19 @@ export function AppointmentCard({ a, onChange, index = 0 }: { a: Appointment; on
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.15 } }}
-      transition={{ delay: Math.min(index * 0.03, 0.3), duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-      className="flex flex-col gap-6 rounded-2xl border border-line bg-surface p-4 sm:flex-row sm:items-center sm:p-5"
+      transition={{ delay: Math.min(index * 0.03, 0.3), duration: 0.3, ease: EASE_SWIFT }}
+      className="flex flex-col gap-6 rounded-lg border border-line bg-surface p-4 sm:flex-row sm:items-center sm:p-5"
     >
       <div className="flex w-full items-center gap-6 sm:w-auto">
-        <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-xl border border-accent/30 bg-accent/5">
-          <span className="text-[11px] font-bold text-accent uppercase">{d.toLocaleDateString("fr-FR", { month: "short" })}</span>
-          <span className="font-display text-3xl leading-none font-medium">{d.getDate()}</span>
+        <div className="flex size-16 shrink-0 flex-col items-center justify-center gap-1 rounded-md border border-line bg-surface-2">
+          <span className="text-xs font-medium text-muted">{d.toLocaleDateString("fr-FR", { month: "short" })}</span>
+          <span className="font-mono text-2xl leading-none font-medium text-text">{d.getDate()}</span>
         </div>
         <div className="min-w-0 flex-1 sm:w-64">
           <p className="truncate font-semibold">{a.service.name}</p>
           <p className="flex items-center gap-1.5 text-sm text-muted">
             <Clock size={14} aria-hidden />
-            {d.toLocaleDateString("fr-FR", { weekday: "long" })} · {formatTime(a.start)} – {formatTime(a.end)}
+            {d.toLocaleDateString("fr-FR", { weekday: "long" })} · <span className="font-mono">{formatTime(a.start)} – {formatTime(a.end)}</span>
           </p>
         </div>
       </div>
@@ -54,7 +56,7 @@ export function AppointmentCard({ a, onChange, index = 0 }: { a: Appointment; on
             </p>
           ) : (
             <>
-              <Link to={`/dashboard/clients/${a.client._id}`} className="font-semibold hover:text-accent">
+              <Link to={`/dashboard/clients/${a.client._id}`} className="font-semibold underline-offset-4 hover:underline">
                 {a.client.username}
               </Link>
               <p className="text-muted">
@@ -67,7 +69,7 @@ export function AppointmentCard({ a, onChange, index = 0 }: { a: Appointment; on
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-4 sm:justify-end">
-        <span className="font-display text-2xl text-accent tabular-nums lining-nums font-medium">{formatPrice(a.price)}</span>
+        <span className="font-mono text-lg font-medium text-text">{formatPrice(a.price)}</span>
         <StatusBadge status={a.status} />
         <AppointmentActions appt={a} onChange={onChange} />
       </div>
@@ -111,29 +113,22 @@ export default function Appointments() {
         title="Rendez-vous"
         subtitle={user?.role === "client" ? "Consultez, modifiez ou annulez vos réservations." : "Toutes les réservations, en temps réel."}
         actions={
-          <LinkButton to="/book" variant="gold" icon={<CalendarPlus size={18} aria-hidden />}>
+          <LinkButton to="/book" variant="primary" icon={<CalendarPlus size={18} aria-hidden />}>
             Nouveau
           </LinkButton>
         }
       />
       <div className="mb-6 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div role="tablist" className="flex gap-1 rounded-xl border border-line bg-surface p-1">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={tab === t.id}
-              onClick={() => {
-                setTab(t.id);
-                table.setSort(t.id === "upcoming" ? "date-asc" : "date-desc");
-              }}
-              className={`relative min-h-10 flex-1 cursor-pointer rounded-lg px-4 text-sm font-semibold transition-colors sm:flex-none ${tab === t.id ? "text-onaccent" : "text-muted hover:text-text"}`}
-            >
-              {tab === t.id && <motion.span layoutId="appt-tab" className="absolute inset-0 rounded-lg bg-gold" transition={{ type: "spring", stiffness: 420, damping: 32 }} />}
-              <span className="relative">{t.label}</span>
-            </button>
-          ))}
-        </div>
+        <Segmented
+          id="appointments-tab"
+          label="Rendez-vous affichés"
+          value={tab}
+          onChange={(id) => {
+            setTab(id);
+            table.setSort(id === "upcoming" ? "date-asc" : "date-desc");
+          }}
+          options={TABS.map((t) => ({ value: t.id, label: t.label }))}
+        />
         {isAdmin && (
           <div className="sm:w-56">
             <Select label="Barber" value={barber} onChange={(e) => setBarber(e.target.value)}>

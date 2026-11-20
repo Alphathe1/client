@@ -46,7 +46,7 @@ function NewClientModal({ open, onClose, onCreated }: { open: boolean; onClose: 
         <Input label="Téléphone" type="tel" value={form.phone} onChange={set("phone")} />
         <Textarea label="Préférences" value={form.preferences} onChange={set("preferences")} placeholder="Ex. dégradé bas, pas de gel" />
         <div className="flex justify-end">
-          <Button type="submit" variant="gold" loading={busy}>
+          <Button type="submit" variant="primary" loading={busy}>
             Créer la fiche
           </Button>
         </div>
@@ -80,7 +80,7 @@ export default function Clients() {
         title="Clients"
         subtitle="Fiches clients, historique et fidélité."
         actions={
-          <Button variant="gold" icon={<UserPlus size={18} aria-hidden />} onClick={() => setCreating(true)}>
+          <Button variant="primary" icon={<UserPlus size={18} aria-hidden />} onClick={() => setCreating(true)}>
             Nouvelle fiche
           </Button>
         }
@@ -101,9 +101,9 @@ export default function Clients() {
       {loading && !data && <Skeleton className="h-96" />}
       {data && table.total === 0 && <EmptyState icon={<Users size={28} />} title="Aucun client trouvé" />}
       {data && table.total > 0 && (
-        <div className="border border-line bg-surface">
+        <div className="overflow-hidden rounded-lg border border-line bg-surface">
           {/* column headings (desktop) */}
-          <div aria-hidden className="hidden grid-cols-[minmax(0,2fr)_minmax(0,1fr)_6rem_8rem_8rem_1.5rem] gap-6 border-b border-line px-6 py-4 text-[11px] tracking-[0.25em] text-subtle uppercase md:grid">
+          <div aria-hidden className="hidden grid-cols-[minmax(0,2fr)_minmax(0,1fr)_6rem_8rem_8rem_1.5rem] gap-6 border-b border-line px-6 py-4 text-xs text-subtle md:grid">
             <span>Client</span>
             <span>Téléphone</span>
             <span className="text-right">Visites</span>
@@ -116,7 +116,7 @@ export default function Clients() {
               <motion.li key={c._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: Math.min(i * 0.02, 0.3) }} className="border-b border-line last:border-b-0">
                 <Link
                   to={`/dashboard/clients/${c._id}`}
-                  className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-3 px-6 py-5 transition-colors hover:bg-surface-2 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_6rem_8rem_8rem_1.5rem]"
+                  className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-3 px-6 py-5 transition-colors hover:bg-surface-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_6rem_8rem_8rem_1.5rem]"
                 >
                   <span className="flex min-w-0 items-center gap-4">
                     <Avatar name={c.username} src={c.avatarUrl} size="sm" />
@@ -129,10 +129,10 @@ export default function Clients() {
                   <span className="col-span-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted md:contents">
                     <span className="md:block md:truncate">{c.phone ?? "—"}</span>
                     <span className="md:text-right">
-                      <span className="font-display text-xl font-medium text-accent tabular-nums lining-nums">{c.visitCount}</span>
+                      <span className="font-mono text-text">{c.visitCount}</span>
                       <span className="md:sr-only"> visites</span>
                     </span>
-                    <span className="text-text tabular-nums md:text-right">{formatPrice(c.totalSpent)}</span>
+                    <span className="font-mono text-text md:text-right">{formatPrice(c.totalSpent)}</span>
                     <span>{c.lastVisit ? formatDate(c.lastVisit) : "Jamais venu"}</span>
                   </span>
                   <CaretRight size={18} className="hidden text-muted transition-transform group-hover:translate-x-1 md:block" aria-hidden />

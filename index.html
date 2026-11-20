@@ -7,17 +7,19 @@
     <link rel="icon" type="image/svg+xml" href="/crown.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <title>L'Empire Barber</title>
     <script>
-      // apply the saved or system theme before first paint
+      // dark is the default: only an explicit "light" choice removes it (applied before first paint)
       try {
         var t = localStorage.getItem("lempire_theme");
         if (t !== "light") document.documentElement.classList.add("dark");
-      } catch (e) {}
+      } catch (e) {
+        document.documentElement.classList.add("dark");
+      }
     </script>
   </head>
-  <body class="min-h-dvh bg-bg font-sans text-text antialiased print:overflow-visible print:bg-white selection:bg-gold selection:text-onaccent">
+  <body class="min-h-dvh bg-bg font-sans text-text antialiased selection:bg-brand-fill selection:text-on-brand print:overflow-visible print:bg-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

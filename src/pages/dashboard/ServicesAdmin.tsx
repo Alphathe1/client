@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { Clock, PencilSimple, Plus, Scissors, Trash } from "@phosphor-icons/react";
-import { Button } from "../../components/ui/Button";
+import { Button, IconButton } from "../../components/ui/Button";
 import { Badge, EmptyState, ErrorState, PageHeader, Skeleton } from "../../components/ui/Display";
 import { FilterSelect, Pagination, TableToolbar, useTable } from "../../components/ui/DataTools";
 import { Input, Textarea } from "../../components/ui/Field";
 import { Modal } from "../../components/ui/Modal";
+import { Switch } from "../../components/ui/Switch";
 import { useToast } from "../../context/ToastContext";
 import { api } from "../../lib/api";
 import { useFetch } from "../../lib/useFetch";
@@ -75,10 +76,10 @@ export default function ServicesAdmin() {
   return (
     <>
       <PageHeader
-        title="Services & tarifs"
+        title="Services et tarifs"
         subtitle="Les prix et durées affichés sur le site et utilisés pour les créneaux."
         actions={
-          <Button variant="gold" icon={<Plus size={18} weight="bold" aria-hidden />} onClick={() => open("new")}>
+          <Button variant="primary" icon={<Plus size={18} weight="bold" aria-hidden />} onClick={() => open("new")}>
             Nouveau service
           </Button>
         }
@@ -93,29 +94,29 @@ export default function ServicesAdmin() {
       {data?.length === 0 && <EmptyState icon={<Scissors size={28} />} title="Aucun service" action={<Button onClick={() => open("new")}>Créer le premier</Button>} />}
       <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {table.rows.map((s) => (
-          <li key={s._id} className={`flex flex-col rounded-2xl border border-line bg-surface p-5 ${s.isActive ? "" : "opacity-60"}`}>
+          <li key={s._id} className={`flex flex-col rounded-lg border bg-surface p-5 ${s.isActive ? "border-line" : "border-dashed border-line-strong"}`}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-bold">{s.name}</p>
+                <p className="font-semibold text-text">{s.name}</p>
                 <div className="mt-1 flex flex-wrap gap-1.5">
                   <Badge>{s.category}</Badge>
-                  {!s.isActive && <Badge tone="gold">Archivé</Badge>}
+                  {!s.isActive && <Badge>Archivé</Badge>}
                 </div>
               </div>
-              <span className="font-display text-3xl text-accent tabular-nums lining-nums font-medium">{formatPrice(s.price)}</span>
+              <span className="shrink-0 font-mono text-lg font-medium text-text">{formatPrice(s.price)}</span>
             </div>
             {s.description && <p className="mt-3 flex-1 text-sm text-muted">{s.description}</p>}
             <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
               <span className="flex items-center gap-1.5 text-sm text-muted">
-                <Clock size={16} aria-hidden /> {formatDuration(s.duration)}
+                <Clock size={16} aria-hidden /> <span className="font-mono">{formatDuration(s.duration)}</span>
               </span>
               <div className="flex gap-1">
-                <Button size="sm" variant="ghost" onClick={() => open(s)} aria-label={`Modifier ${s.name}`}>
-                  <PencilSimple size={18} />
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setDeleting(s)} aria-label={`Supprimer ${s.name}`}>
-                  <Trash size={18} />
-                </Button>
+                <IconButton label={`Modifier ${s.name}`} onClick={() => open(s)}>
+                  <PencilSimple size={18} aria-hidden />
+                </IconButton>
+                <IconButton label={`Supprimer ${s.name}`} onClick={() => setDeleting(s)}>
+                  <Trash size={18} aria-hidden />
+                </IconButton>
               </div>
             </div>
           </li>
@@ -137,12 +138,9 @@ export default function ServicesAdmin() {
             ))}
           </datalist>
           <Textarea label="Description" value={form.description} onChange={set("description")} maxLength={500} />
-          <label className="flex min-h-11 cursor-pointer items-center gap-4 text-sm">
-            <input type="checkbox" checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} className="size-5 accent-gold" />
-            Visible et réservable sur le site
-          </label>
+          <Switch label="Visible sur le site" hint="Les clients peuvent le réserver en ligne." checked={form.isActive} onChange={(isActive) => setForm((f) => ({ ...f, isActive }))} />
           <div className="flex justify-end">
-            <Button type="submit" variant="gold" loading={busy}>
+            <Button type="submit" variant="primary" loading={busy}>
               Enregistrer
             </Button>
           </div>

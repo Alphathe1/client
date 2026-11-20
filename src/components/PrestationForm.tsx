@@ -127,7 +127,7 @@ export function PrestationForm({ appointment, prestation, clientId, onDone }: Pr
         <PhotoPicker label="Photos après" value={after} onChange={setAfter} />
       </div>
       <div className="flex justify-end gap-2 border-t border-line pt-5">
-        <Button type="submit" variant="gold" loading={busy}>
+        <Button type="submit" variant="primary" loading={busy}>
           {prestation ? "Enregistrer" : "Valider la prestation"}
         </Button>
       </div>

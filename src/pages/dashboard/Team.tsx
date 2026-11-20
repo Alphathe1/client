@@ -99,7 +99,7 @@ export default function Team() {
         title="Équipe"
         subtitle="Barbers, managers : comptes, spécialités et horaires."
         actions={
-          <Button variant="gold" icon={<UserPlus size={18} aria-hidden />} onClick={() => open("new")}>
+          <Button variant="primary" icon={<UserPlus size={18} aria-hidden />} onClick={() => open("new")}>
             Ajouter un membre
           </Button>
         }
@@ -114,14 +114,14 @@ export default function Team() {
       {data?.length === 0 && <EmptyState icon={<UsersThree size={28} />} title="Aucun membre" />}
       <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {table.rows.map((u) => (
-          <li key={u._id} className={`flex flex-col gap-4 rounded-2xl border border-line bg-surface p-5 ${u.isActive ? "" : "opacity-55"}`}>
+          <li key={u._id} className={`flex flex-col gap-4 rounded-lg border bg-surface p-5 ${u.isActive ? "border-line" : "border-dashed border-line-strong"}`}>
             <div className="flex items-center gap-4">
               <Avatar name={u.username} src={u.avatarUrl} size="lg" />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-bold">{u.username}</p>
+                <p className="truncate font-semibold text-text">{u.username}</p>
                 <p className="truncate text-sm text-muted">{u.email}</p>
               </div>
-              <Badge tone={u.role === "barber" ? "outline" : "gold"}>{ROLE_LABEL[u.role]}</Badge>
+              <Badge tone={u.role === "barber" ? "outline" : "default"}>{ROLE_LABEL[u.role]}</Badge>
             </div>
             {u.specialties && u.specialties.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
@@ -130,7 +130,7 @@ export default function Team() {
                 ))}
               </div>
             )}
-            {!u.isActive && <p className="text-xs font-semibold text-danger">Compte désactivé</p>}
+            {!u.isActive && <p className="text-xs font-medium text-danger">Compte désactivé</p>}
             <div className="mt-auto flex gap-2 border-t border-line pt-3">
               <Button size="sm" variant="secondary" icon={<PencilSimple size={16} aria-hidden />} onClick={() => open(u)} disabled={u.role === "owner" && me?.role !== "owner"}>
                 Modifier
@@ -177,7 +177,7 @@ export default function Team() {
             </>
           )}
           <div className="flex justify-end">
-            <Button type="submit" variant="gold" loading={busy}>
+            <Button type="submit" variant="primary" loading={busy}>
               Enregistrer
             </Button>
           </div>

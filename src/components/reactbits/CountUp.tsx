@@ -13,6 +13,7 @@ interface CountUpProps {
   format?: (n: number) => string;
 }
 
+/** The animated digits are hidden from assistive tech, which reads the final value once instead of every frame. */
 export default function CountUp({ to, from = 0, duration = 1.6, decimals = 0, prefix = "", suffix = "", className = "", format }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const reduce = useReducedMotion();
@@ -36,8 +37,11 @@ export default function CountUp({ to, from = 0, duration = 1.6, decimals = 0, pr
   );
 
   return (
-    <span ref={ref} className={`tabular-nums lining-nums ${className}`}>
-      {render(reduce ? to : from)}
+    <span className={`tabular-nums lining-nums ${className}`}>
+      <span ref={ref} aria-hidden>
+        {render(reduce ? to : from)}
+      </span>
+      <span className="sr-only">{render(to)}</span>
     </span>
   );
 }

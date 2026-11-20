@@ -7,7 +7,7 @@ import type { Role } from "../../lib/types";
 export function FullPageLoader() {
   return (
     <div className="flex min-h-dvh items-center justify-center" role="status" aria-label="Chargement">
-      <Crown size={40} weight="fill" className="animate-pulse text-accent" aria-hidden />
+      <Crown size={40} weight="fill" className="animate-pulse text-brand" aria-hidden />
     </div>
   );
 }

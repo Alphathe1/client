@@ -51,7 +51,8 @@ export function useTable<T>(items: T[] | null | undefined, opts: TableOptions<T>
 
 type TableState<T> = ReturnType<typeof useTable<T>>;
 
-const controlCls = "min-h-11 border border-line bg-surface px-3 text-sm text-text outline-none transition-colors focus:border-accent";
+const controlCls =
+  "min-h-10 rounded-sm border border-line-strong bg-surface px-3 text-base text-text outline-offset-0 transition-colors duration-100 ease-out hover:border-text focus:border-brand sm:text-sm pointer-coarse:min-h-11";
 
 /** Search box + sort dropdown + slot for filter controls */
 export function TableToolbar<T>({ table, placeholder = "Rechercher…", searchable = true, children }: { table: TableState<T>; placeholder?: string; searchable?: boolean; children?: ReactNode }) {
@@ -69,7 +70,7 @@ export function TableToolbar<T>({ table, placeholder = "Rechercher…", searchab
       {children}
       {table.sorts.length > 0 && (
         <div className="flex items-center gap-3 sm:ml-auto">
-          <label htmlFor="table-sort" className="text-[11px] tracking-[0.25em] text-muted uppercase">
+          <label htmlFor="table-sort" className="text-sm text-muted">
             Trier
           </label>
           <select id="table-sort" value={table.sort} onChange={(e) => table.setSort(e.target.value)} className={`${controlCls} cursor-pointer`}>
@@ -90,7 +91,7 @@ export function FilterSelect({ label, value, onChange, options }: { label: strin
   const id = `filter-${label.replace(/\s+/g, "-").toLowerCase()}`;
   return (
     <div className="flex items-center gap-3">
-      <label htmlFor={id} className="text-[11px] tracking-[0.25em] text-muted uppercase">
+      <label htmlFor={id} className="text-sm text-muted">
         {label}
       </label>
       <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className={`${controlCls} min-w-36 cursor-pointer`}>
@@ -119,7 +120,8 @@ export function Pagination<T>({ table, sizes = [6, 10, 20, 50] }: { table: Table
   if (total === 0) return null;
   const from = (page - 1) * pageSize + 1;
   const to = Math.min(total, page * pageSize);
-  const nav = "flex size-10 cursor-pointer items-center justify-center border border-line text-sm tabular-nums transition-colors hover:border-text/40 disabled:pointer-events-none disabled:opacity-40";
+  const nav =
+    "flex size-10 cursor-pointer items-center justify-center rounded-sm border border-line font-mono text-sm transition-colors duration-100 ease-out hover:border-line-strong hover:bg-surface-2 disabled:pointer-events-none disabled:opacity-40 pointer-coarse:size-11";
   return (
     <nav aria-label="Pagination" className="mt-10 flex flex-col items-center justify-between gap-6 border-t border-line pt-6 sm:flex-row">
       <p className="text-sm text-muted tabular-nums">
@@ -135,7 +137,7 @@ export function Pagination<T>({ table, sizes = [6, 10, 20, 50] }: { table: Table
               …
             </span>
           ) : (
-            <button key={p} className={`${nav} ${p === page ? "border-gold bg-gold text-onaccent hover:border-gold" : ""}`} onClick={() => setPage(p)} aria-current={p === page ? "page" : undefined} aria-label={`Page ${p}`}>
+            <button key={p} className={`${nav} ${p === page ? "border-primary bg-primary text-on-primary hover:border-primary" : ""}`} onClick={() => setPage(p)} aria-current={p === page ? "page" : undefined} aria-label={`Page ${p}`}>
               {p}
             </button>
           ),
@@ -145,7 +147,7 @@ export function Pagination<T>({ table, sizes = [6, 10, 20, 50] }: { table: Table
         </button>
       </div>
       <div className="flex items-center gap-3">
-        <label htmlFor="page-size" className="text-[11px] tracking-[0.25em] text-muted uppercase">
+        <label htmlFor="page-size" className="text-sm text-muted">
           Par page
         </label>
         <select id="page-size" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))} className={`${controlCls} cursor-pointer`}>
